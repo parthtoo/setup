@@ -1,0 +1,5 @@
+git mercurial
+vim tree
+python-dev python-setuptools
+easy-install hg-git
+nodejs
