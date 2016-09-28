@@ -2,6 +2,12 @@
 
 var gulp = require('gulp');
 var concat = require('gulp-concat');
+var sass = require('gulp-sass');
+var browserify = require("browserify");
+var babelify = require("babelify");
+var fs = require("fs");
+var clean = require('gulp-clean');
+var connect = require('gulp-connect');
 
 // html, css, js
 
@@ -11,7 +17,6 @@ gulp.task('html', function() {
 });
 
 gulp.task('css', function() {
-	var sass = require('gulp-sass');
 	gulp.src('src/css/*.scss')
 	.pipe(sass())
 	.pipe(concat('styles.css'))
@@ -19,9 +24,6 @@ gulp.task('css', function() {
 });
 
 gulp.task('js', function() {
-	var browserify = require("browserify");
-	var babelify = require("babelify");
-	var fs = require("fs");
 	browserify('src/js/main.js')
 	.transform(babelify, {
 		presets: ['es2015']
@@ -35,7 +37,6 @@ gulp.task('js', function() {
 gulp.task('build', ['html', 'css', 'js']);
 
 gulp.task('clean', function() {
-	var clean = require('gulp-clean');
 	gulp.src(['dist/**/*.html', 'dist/styles.css', 'dist/bundle.js'], {
 		read: false
 	})
@@ -48,8 +49,6 @@ gulp.task('serve', function() {
 	gulp.watch('src/**/*.html', ['html']);
 	gulp.watch('src/css/*.scss', ['css']);
 	gulp.watch('src/js/*.js', ['js']);
-	
-	var connect = require('gulp-connect');
 	connect.server({
 		root: 'dist',
 	});
