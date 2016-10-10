@@ -1,13 +1,15 @@
 'use strict';
 
 var gulp = require('gulp');
+var clean = require('gulp-clean');
 var concat = require('gulp-concat');
+var connect = require('gulp-connect');
+
+var fs = require("fs");
+
 var sass = require('gulp-sass');
 var browserify = require("browserify");
 var babelify = require("babelify");
-var fs = require("fs");
-var clean = require('gulp-clean');
-var connect = require('gulp-connect');
 
 // html, css, js
 
@@ -17,7 +19,7 @@ gulp.task('html', function() {
 });
 
 gulp.task('css', function() {
-	gulp.src('src/css/*.scss')
+	gulp.src('src/css/**/*.scss')
 	.pipe(sass())
 	.pipe(concat('styles.css'))
 	.pipe(gulp.dest('dist'));
@@ -47,8 +49,8 @@ gulp.task('clean', function() {
 
 gulp.task('serve', function() {
 	gulp.watch('src/**/*.html', ['html']);
-	gulp.watch('src/css/*.scss', ['css']);
-	gulp.watch('src/js/*.js', ['js']);
+	gulp.watch('src/css/**/*.scss', ['css']);
+	gulp.watch('src/js/**/*.js', ['js']);
 	connect.server({
 		root: 'dist',
 	});
