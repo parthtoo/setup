@@ -1,47 +1,40 @@
 'use strict';
 
 var gulp = require('gulp');
+var sass = require('gulp-sass');
 var clean = require('gulp-clean');
-var concat = require('gulp-concat');
 var connect = require('gulp-connect');
+var sourcemaps = require('gulp-sourcemaps');
 
 var fs = require("fs");
 
-var sass = require('gulp-sass');
-var browserify = require('browserify');
-var tsify = require('tsify');
 var babelify = require('babelify');
+var browserify = require('browserify');
 
-// html, scss, ts
-
-gulp.task('html', function() {
-	gulp.src('src/**/*.html')
-	.pipe(gulp.dest('dist'));
-});
+// scss and js
 
 gulp.task('scss', function() {
-	gulp.src('src/scss/**/*.scss')
-	.pipe(sass())
-	.on('error', function(err) { console.error(err.toString()); })
-	.pipe(concat('styles.css'))
-	.pipe(gulp.dest('dist'));
+	gulp.src('scss/**/*.scss')
+	.pipe(sourcemaps.init())
+	.pipe(sass().on('error', sass.logError))
+	.pipe(sourcemaps.write())
+	.pipe(gulp.dest('build'));
 });
 
-gulp.task('ts', function() {
-	browserify('src/ts/main.ts')
-	.plugin(tsify, {target: 'es2015'})
-	.transform(babelify, {presets: 'env', extensions: '.ts'})
+gulp.task('js', function() {
+	browserify('js/main.js', {debug: true})
+	.transform(babelify, {presets: 'env'})
 	.bundle()
 	.on('error', function(err) { console.error(err.toString()); })
-	.pipe(fs.createWriteStream("dist/bundle.js"));
+	.pipe(fs.createWriteStream("build/main.js"));
 });
 
 // build and clean
 
-gulp.task('build', ['html', 'scss', 'ts']);
+gulp.task('build', ['scss', 'js']);
 
 gulp.task('clean', function() {
-	gulp.src(['dist/**/*.html', 'dist/styles.css', 'dist/bundle.js'], {
+	gulp.src(['build/**/*.css', 'build/bundle.js'], {
 		read: false
 	})
 	.pipe(clean());
@@ -50,10 +43,9 @@ gulp.task('clean', function() {
 // serve
 
 gulp.task('serve', function() {
-	gulp.watch('src/**/*.html', ['html']);
-	gulp.watch('src/scss/**/*.scss', ['scss']);
-	gulp.watch('src/ts/**/*.ts', ['ts']);
+	gulp.watch('scss/**/*.scss', ['scss']);
+	gulp.watch('js/**/*.js', ['js']);
 	connect.server({
-		root: 'dist',
+		root: '.',
 	});
 });
